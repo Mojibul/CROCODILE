@@ -1,0 +1,24 @@
+CREATE OR REPLACE PROCEDURE HR.validtransactiontime
+IS
+   e_workingday    EXCEPTION;
+   e_workingtime   EXCEPTION;
+BEGIN
+  -- DATE AND TIME STORE SOMEWHARE AND FETCH IT AND COMPAREING IT
+   IF TO_CHAR (SYSDATE, 'DY') IN ('SAT', 'SUN')
+   THEN
+      RAISE e_workingday;
+   END IF;
+
+   IF TO_CHAR (SYSDATE, 'HH24:MI') NOT BETWEEN '08:00' AND '18:00'
+   THEN
+      RAISE e_workingtime;
+   END IF;
+EXCEPTION
+   WHEN e_workingday
+   THEN
+      raise_application_error (-20201, 'You may only make changes during normal office days');
+   WHEN e_workingtime
+   THEN
+      raise_application_error (-20201, 'You may only make changes during normal office hours');
+END;
+/
